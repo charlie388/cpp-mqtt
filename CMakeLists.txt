@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.8)
 project(cpp-mqtt CXX)
 
 find_package(Git QUIET)
@@ -16,41 +16,23 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
     endif()
 endif()
 
-
-set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/paho.mqtt.cpp/cmake")
 set(CMAKE_CXX_STANDARD 17)
 
-set(PAHO_BUILD_STATIC TRUE)
-set(PAHO_BUILD_SHARED FALSE)
-set(PAHO_WITH_SSL TRUE)
-set(PAHO_ENABLE_TESTING FALSE)
-set(PAHO_MQTT_C_LIBRARIES "${PROJECT_SOURCE_DIR}/build/paho.mqtt.c/src")
-set(PAHO_MQTT_C_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/paho.mqtt.c/src")
-
-include_directories("paho.mqtt.c/src" "paho.mqtt.cpp/src")
-
-link_directories(   "${PROJECT_SOURCE_DIR}/build/paho.mqtt.cpp/src"
-                    "${PROJECT_SOURCE_DIR}/build/paho.mqtt.c/src"
-                    "${PROJECT_SOURCE_DIR}/build/paho.mqtt.c/src/CMakeFiles/*"
-                    "${PROJECT_SOURCE_DIR}/build/paho.mqtt.cpp/src/CMakeFiles/*")
-
+set(PAHO_BUILD_STATIC TRUE CACHE BOOL "my choice" FORCE)
+set(PAHO_BUILD_SHARED FALSE CACHE BOOL "my choice" FORCE)
+set(PAHO_WITH_SSL TRUE CACHE BOOL "my choice" FORCE)
+set(PAHO_ENABLE_TESTING FALSE CACHE BOOL "my choice" FORCE)
+set(PAHO_HIGH_PERFORMANCE TRUE CACHE BOOL "my choice" FORCE)
+set(PAHO_MQTT_C_LIBRARIES "${PROJECT_BINARY_DIR}/paho.mqtt.c/src/libpaho-mqtt3as.a" CACHE FILEPATH "my choice" FORCE) 
+set(PAHO_MQTT_C_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/paho.mqtt.c/src" CACHE PATH "my choice" FORCE) 
 
 add_subdirectory(paho.mqtt.c)
 add_subdirectory(paho.mqtt.cpp)
 
-find_package(Threads)
-find_package(PahoMqttC)
-find_package(OpenSSL)
+add_dependencies(paho-mqttpp3-static paho-mqtt3as-static)
 
 add_executable(cpp-mqtt main.cpp)
-target_link_libraries( cpp-mqtt 
-        ${CMAKE_THREAD_LIBS_INIT}
-        ${PROJECT_SOURCE_DIR}/build/paho.mqtt.cpp/src/libpaho-mqttpp3.a
-        ${PROJECT_SOURCE_DIR}/build/paho.mqtt.c/src/libpaho-mqtt3as.a
-        ${OPENSSL_SSL_LIBRARIES}
-        ${OPENSSL_CRYPTO_LIBRARIES}
-        ${CMAKE_DL_LIBS}
-        )
+target_link_libraries(cpp-mqtt paho-mqttpp3-static)
 
 add_custom_command(
             TARGET cpp-mqtt POST_BUILD

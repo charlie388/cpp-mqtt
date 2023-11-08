@@ -45,10 +45,8 @@ If you prefer to see and use the sample code on your own environment on a local 
 ```bash
 git clone https://github.com/aschiffler/cpp-mqtt.git
 cd cpp-mqtt
-# create makefiles
-cmake -S ./ -B ./build -G Ninja
-# yes run twice due to git submodule init for paho client libraries
-cmake -S ./ -B ./build -G Ninja
+# create makefiles (test on ubuntu 16.04)
+cmake -S ./ -Bbuild -G Ninja
 # build
 cmake  --build ./build --target all --
 ```
